@@ -10,14 +10,36 @@ from research_agent.persistence.file_repository import FileRepository
 from research_agent.query_enhancer import QueryEnhancer
 from research_agent.reporting import ReportBuilder
 from research_agent.tools.calculator import CalculatorTool
+from research_agent.tools.india_tool import IndiaTool
 from research_agent.tools.vector_search import VectorSearchTool
 from research_agent.tools.web_search import WebSearchTool
+from research_agent.vector_search.cache import VectorCache
+from research_agent.vector_search.chunker import SlidingWindowChunker
+from research_agent.vector_search.embeddings import OpenRouterEmbeddingClient
+from research_agent.vector_search.index import InMemoryVectorIndex
 
 
 def build_app() -> ResearchOrchestrator:
     settings = load_settings()
     repository = FileRepository(settings.data_dir)
-    tools = [WebSearchTool(), VectorSearchTool(), CalculatorTool()]
+    vector_index = InMemoryVectorIndex(
+        documents_dir=settings.vector_search_documents_dir,
+        embedding_client=OpenRouterEmbeddingClient(
+            api_key=settings.open_router_api_key,
+            model=settings.embedding_model,
+        ),
+        cache=VectorCache(settings.vector_search_cache_dir),
+        chunker=SlidingWindowChunker(
+            chunk_size=settings.vector_search_chunk_size,
+            chunk_overlap=settings.vector_search_chunk_overlap,
+        ),
+    )
+    tools = [
+        WebSearchTool(),
+        VectorSearchTool(index=vector_index, top_k=settings.vector_search_top_k),
+        CalculatorTool(),
+        IndiaTool(),
+    ]
     llm_client = None
     if settings.gemini_api_key:
         llm_client = GeminiClient(

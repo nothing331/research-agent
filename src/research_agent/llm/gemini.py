@@ -39,7 +39,9 @@ class GeminiClient:
             f"{chr(10).join(f'- {item}' for item in evaluation_feedback)}\n\n"
             "Citations:\n"
             f"{chr(10).join(f'- {item}' for item in citations) or '- none'}\n\n"
-            "Respond like a helpful chatbot. If the tools are stubbed or evidence is weak, say that clearly."
+            "Respond like a helpful chatbot. If the tools are stubbed or evidence is weak, say that clearly.\n"
+            "Return only the final user-facing answer.\n"
+            "Do not reveal chain-of-thought, scratchpad notes, internal analysis, or planning."
         )
         return self._generate_text(prompt)
 
@@ -97,4 +99,22 @@ class GeminiClient:
         text = "\n".join(item for item in text_parts if item).strip()
         if not text:
             raise RuntimeError("Gemini returned an empty text response.")
+        return self._sanitize_response(text)
+
+    def _sanitize_response(self, text: str) -> str:
+        lines = [line.rstrip() for line in text.splitlines()]
+        non_empty = [line.strip() for line in lines if line.strip()]
+        if not non_empty:
+            return text
+
+        bullet_like = sum(
+            1
+            for line in non_empty
+            if line.startswith(("*", "-", "•")) or line.endswith(":")
+        )
+        if bullet_like >= max(3, len(non_empty) // 2):
+            for line in reversed(non_empty):
+                if not line.startswith(("*", "-", "•")) and not line.endswith(":"):
+                    return line
+
         return text

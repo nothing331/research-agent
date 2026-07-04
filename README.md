@@ -7,6 +7,7 @@ Terminal-first AI research assistant scaffold with a Gemini-backed chat layer.
 - Accept a user query in the terminal
 - Enhance the query
 - Run starter tool stubs
+- Run in-memory vector search over local PDFs when documents are available
 - Build a cumulative report from tool outputs
 - Evaluate the report
 - Use Gemini to turn the current conversation, report, and evaluation into a chatbot response
@@ -27,8 +28,15 @@ Terminal-first AI research assistant scaffold with a Gemini-backed chat layer.
 
 - `GEMINI_API_KEY`: required for Gemini responses
 - `GEMINI_MODEL`: optional, defaults to `gemini-2.0-flash`
+- `OPEN_ROUTER_API`: required for document embeddings through OpenRouter
+- `EMBEDDING_MODEL`: optional, defaults to `openai/text-embedding-3-small`
 - `RESEARCH_AGENT_DATA_DIR`: optional runtime artifact directory
 - `RESEARCH_AGENT_LOG_DIR`: optional log directory
+- `VECTOR_SEARCH_DOCUMENTS_DIR`: local PDF folder for ingestion
+- `VECTOR_SEARCH_CACHE_DIR`: local cache for parsed chunks and embeddings
+- `VECTOR_SEARCH_CHUNK_SIZE`: chunk size in characters
+- `VECTOR_SEARCH_CHUNK_OVERLAP`: overlap in characters
+- `VECTOR_SEARCH_TOP_K`: number of retrieved chunks to return
 - `RESEARCH_AGENT_SYSTEM_PROMPT`: optional system prompt override
 
 ## Setup
@@ -51,6 +59,8 @@ Optional model override:
 ```powershell
 $env:GEMINI_MODEL="gemini-2.0-flash"
 ```
+
+Put PDFs you want indexed inside the configured `documents` folder before running the app.
 
 ## Run
 

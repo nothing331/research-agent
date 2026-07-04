@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "pinecone-docs": {
+      "source": "pinecone-io/skills",
+      "sourceType": "github",
+      "skillPath": "skills/pinecone-docs/SKILL.md",
+      "computedHash": "a9b262a04fe2d5d81bac2e59acc79cc609429a94ecbb710bc18f996926de18e1"
+    }
+  }
+}
