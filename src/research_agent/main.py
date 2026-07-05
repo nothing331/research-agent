@@ -4,7 +4,7 @@ from research_agent.answer_compiler import AnswerCompiler
 from research_agent.config import load_settings
 from research_agent.evaluation import Evaluator
 from research_agent.execution_logger import ExecutionLogger
-from research_agent.llm.gemini import GeminiClient
+from research_agent.llm.openrouter import OpenRouterChatClient
 from research_agent.orchestrator import ResearchOrchestrator
 from research_agent.persistence.file_repository import FileRepository
 from research_agent.query_enhancer import QueryEnhancer
@@ -13,6 +13,8 @@ from research_agent.tools.calculator import CalculatorTool
 from research_agent.tools.india_tool import IndiaTool
 from research_agent.tools.vector_search import VectorSearchTool
 from research_agent.tools.web_search import WebSearchTool
+from research_agent.web_search.cache import WebSearchCache
+from research_agent.web_search.client import WebSearchClient
 from research_agent.vector_search.cache import VectorCache
 from research_agent.vector_search.chunker import SlidingWindowChunker
 from research_agent.vector_search.embeddings import OpenRouterEmbeddingClient
@@ -34,17 +36,26 @@ def build_app() -> ResearchOrchestrator:
             chunk_overlap=settings.vector_search_chunk_overlap,
         ),
     )
+    web_client = WebSearchClient()
+    web_cache = WebSearchCache(
+        cache_dir=settings.web_search_cache_dir,
+        ttl_hours=settings.web_search_ttl_hours,
+    )
     tools = [
-        WebSearchTool(),
+        WebSearchTool(
+            client=web_client,
+            cache=web_cache,
+            max_results=settings.web_search_max_results,
+        ),
         VectorSearchTool(index=vector_index, top_k=settings.vector_search_top_k),
         CalculatorTool(),
         IndiaTool(),
     ]
     llm_client = None
-    if settings.gemini_api_key:
-        llm_client = GeminiClient(
-            api_key=settings.gemini_api_key,
-            model=settings.gemini_model,
+    if settings.open_router_api_key:
+        llm_client = OpenRouterChatClient(
+            api_key=settings.open_router_api_key,
+            model=settings.open_router_model,
             system_prompt=settings.system_prompt,
         )
 
@@ -63,6 +74,7 @@ def main() -> None:
     orchestrator = build_app()
     session = orchestrator.create_session()
     print("Research agent terminal v1. Type 'exit' to quit.")
+    print(f"Session ID: {session.id}")
     print("Conversation transcripts are saved under runtime_data and logs under runtime_logs.")
 
     message_index = 0

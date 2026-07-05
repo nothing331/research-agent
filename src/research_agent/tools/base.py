@@ -9,6 +9,7 @@ from research_agent.domain import ToolResult
 @dataclass(slots=True)
 class ToolContext:
     enhanced_query: str
+    original_query: str = ""
 
 
 class ResearchTool(Protocol):

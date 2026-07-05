@@ -5,6 +5,7 @@ from pathlib import Path
 
 from research_agent.vector_search.cache import VectorCache
 from research_agent.vector_search.chunker import SlidingWindowChunker
+from research_agent.vector_search.cleaner import BoilerplateCleaner
 from research_agent.vector_search.embeddings import OpenRouterEmbeddingClient
 from research_agent.vector_search.pdf_loader import PdfLoader
 from research_agent.vector_search.types import DocumentChunk, SearchMatch, SearchResult
@@ -17,11 +18,13 @@ class InMemoryVectorIndex:
         embedding_client: OpenRouterEmbeddingClient,
         cache: VectorCache,
         chunker: SlidingWindowChunker,
+        cleaner: BoilerplateCleaner | None = None,
     ) -> None:
         self.documents_dir = Path(documents_dir)
         self.embedding_client = embedding_client
         self.cache = cache
         self.chunker = chunker
+        self.cleaner = cleaner or BoilerplateCleaner()
         self.pdf_loader = PdfLoader()
         self.chunks: list[DocumentChunk] = []
         self._ready = False
@@ -48,6 +51,7 @@ class InMemoryVectorIndex:
                 continue
 
             pages = self.pdf_loader.load_pages(pdf_path)
+            pages = self.cleaner.clean(pages)
             chunks = self.chunker.chunk_pages(document_id=document_id, pdf_path=pdf_path, pages=pages)
             if not chunks:
                 continue

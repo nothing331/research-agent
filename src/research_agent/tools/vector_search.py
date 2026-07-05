@@ -36,7 +36,7 @@ class VectorSearchTool:
             for match in result.matches
         ]
         snippets = [
-            f"{match.filename} page {match.page_number} score={match.score:.3f}: {match.text[:180]}"
+            f"{match.filename} page {match.page_number} score={match.score:.3f}: {match.text}"
             for match in result.matches
         ]
         return ToolResult(

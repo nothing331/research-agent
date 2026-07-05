@@ -5,6 +5,8 @@ description = "Terminal-first AI research assistant scaffold"
 requires-python = ">=3.11"
 dependencies = [
     "pypdf>=5.7.0",
+    "ddgs>=9.0.0",
+    "pdfplumber>=0.11.0",
 ]
 
 [project.scripts]

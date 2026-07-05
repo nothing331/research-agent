@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from research_agent.domain import SessionMessage
 from .domain import Evaluation, Report
-from .llm.gemini import GeminiClient
+from .llm.openrouter import OpenRouterChatClient
 
 
 class AnswerCompiler:
-    def __init__(self, llm_client: GeminiClient | None = None) -> None:
+    def __init__(self, llm_client: OpenRouterChatClient | None = None) -> None:
         self.llm_client = llm_client
 
     def compile(

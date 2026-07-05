@@ -78,7 +78,10 @@ class ResearchOrchestrator:
         self.repository.update_research_run(research_run)
         self._log_run(session.id, research_run.id, "tools_started", "Beginning tool execution.")
 
-        context = ToolContext(enhanced_query=research_run.enhanced_query)
+        context = ToolContext(
+            enhanced_query=research_run.enhanced_query,
+            original_query=research_run.query,
+        )
         results = []
 
         for tool in self.tools:

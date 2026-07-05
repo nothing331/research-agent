@@ -26,9 +26,8 @@ Terminal-first AI research assistant scaffold with a Gemini-backed chat layer.
 
 ## Environment variables
 
-- `GEMINI_API_KEY`: required for Gemini responses
-- `GEMINI_MODEL`: optional, defaults to `gemini-2.0-flash`
-- `OPEN_ROUTER_API`: required for document embeddings through OpenRouter
+- `OPEN_ROUTER_API`: required for chat responses and document embeddings through OpenRouter
+- `OPEN_ROUTER_MODEL`: optional, defaults to `nvidia/nemotron-3-ultra-550b-a55b:free`
 - `EMBEDDING_MODEL`: optional, defaults to `openai/text-embedding-3-small`
 - `RESEARCH_AGENT_DATA_DIR`: optional runtime artifact directory
 - `RESEARCH_AGENT_LOG_DIR`: optional log directory
@@ -54,10 +53,10 @@ Set your Gemini API key in PowerShell:
 $env:GEMINI_API_KEY="your-api-key"
 ```
 
-Optional model override:
+Optional chat model override:
 
 ```powershell
-$env:GEMINI_MODEL="gemini-2.0-flash"
+$env:OPEN_ROUTER_MODEL="nvidia/nemotron-3-ultra-550b-a55b:free"
 ```
 
 Put PDFs you want indexed inside the configured `documents` folder before running the app.

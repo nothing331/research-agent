@@ -26,9 +26,10 @@ class Settings:
     app_name: str = "research-agent"
     postgres_dsn: str = field(default_factory=lambda: os.getenv("POSTGRES_DSN", ""))
     evaluator_min_score: int = field(default_factory=lambda: int(os.getenv("EVALUATOR_MIN_SCORE", "7")))
-    gemini_api_key: str = field(default_factory=lambda: os.getenv("GEMINI_API_KEY", ""))
-    gemini_model: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-2.0-flash"))
     open_router_api_key: str = field(default_factory=lambda: os.getenv("OPEN_ROUTER_API", ""))
+    open_router_model: str = field(
+        default_factory=lambda: os.getenv("OPEN_ROUTER_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free")
+    )
     embedding_model: str = field(default_factory=lambda: os.getenv("EMBEDDING_MODEL", "openai/text-embedding-3-small"))
     data_dir: str = field(default_factory=lambda: os.getenv("RESEARCH_AGENT_DATA_DIR", "runtime_data"))
     logs_dir: str = field(default_factory=lambda: os.getenv("RESEARCH_AGENT_LOG_DIR", "runtime_logs"))
@@ -37,13 +38,20 @@ class Settings:
     vector_search_chunk_size: int = field(default_factory=lambda: int(os.getenv("VECTOR_SEARCH_CHUNK_SIZE", "1200")))
     vector_search_chunk_overlap: int = field(default_factory=lambda: int(os.getenv("VECTOR_SEARCH_CHUNK_OVERLAP", "200")))
     vector_search_top_k: int = field(default_factory=lambda: int(os.getenv("VECTOR_SEARCH_TOP_K", "3")))
+    web_search_cache_dir: str = field(
+        default_factory=lambda: os.getenv("WEB_SEARCH_CACHE_DIR", "runtime_data/web_search_cache")
+    )
+    web_search_ttl_hours: int = field(default_factory=lambda: int(os.getenv("WEB_SEARCH_TTL_HOURS", "24")))
+    web_search_max_results: int = field(default_factory=lambda: int(os.getenv("WEB_SEARCH_MAX_RESULTS", "5")))
     system_prompt: str = field(
         default_factory=lambda: os.getenv(
             "RESEARCH_AGENT_SYSTEM_PROMPT",
             (
-                "You are a helpful AI research assistant. Answer conversationally, "
-                "use the provided report and evaluation notes when relevant, and be honest "
-                "about missing evidence or tool limitations."
+                "You are a research assistant. Answer the user's question directly using the provided report. "
+                "Do NOT ask clarifying questions. Do NOT say 'I need more information'. "
+                "Give the best answer you can from the available data. "
+                "If the tools returned relevant results, synthesize them into a clear response. "
+                "If tools returned weak or irrelevant data, say so briefly and provide what you can."
             ),
         )
     )
